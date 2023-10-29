@@ -28,6 +28,24 @@ button {
 	cursor: pointer;
 }
 
+.main-select, .main-select select {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 2rem;
+}
+
+.game-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1em;
+  margin: 0 auto;
+  gap: 0.3rem;
+}
+
 .btn-main {
 	width: 16rem;
 	padding: 0.6rem 0;
@@ -82,10 +100,10 @@ button {
 /* players */
 .players-container {
 	display: grid;
+	font-size: 1.4rem;
 	grid-template-columns: repeat(2, 12rem);
 }
 
 .player-selected {
-	font-size: 1.4rem;
 	font-weight: 700;
 }

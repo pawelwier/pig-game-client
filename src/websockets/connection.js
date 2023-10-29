@@ -1,21 +1,15 @@
-import WebSockets from 'websocket'
+import { MessageTypes } from "../utils"
 
-export const client = new WebSockets.w3cwebsocket('ws://localhost:2323/', 'echo-protocol')
-
-client.onerror = () => {
-  console.log('Connection Error')
+export const getSocketConnection = ({
+  onAddMessage, onTakeMessage
+}) => {
+  const socket = new WebSocket('ws://localhost:2323/', 'pig-game-protocol')
+  socket.onmessage = e => {
+    const dataParsed = JSON.parse(e.data)
+    const { type, currentPlayer, points } = dataParsed
+    if (type === MessageTypes.ADD) { onAddMessage({ currentPlayer, points }) }
+    if (type === MessageTypes.TAKE) { onTakeMessage({ currentPlayer }) }
+  }
+  return socket
 }
 
-client.onopen = () => {
-  console.log('WebSocket Client Connected.')
-}
-
-client.onclose = () => {
-  console.log('echo-protocol Client Closed')
-}
-
-// client.onmessage = e => {
-//   if (typeof e.data === 'string') {
-//     
-//   }
-// }
