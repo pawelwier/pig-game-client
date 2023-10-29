@@ -50,6 +50,11 @@ button {
 	transform: translateY(0.2rem);
 }
 
+.total-score {
+	font-size: 1.8rem;
+	padding: 1rem 0;
+}
+
 /* dice */
 .dice-pip-container {
 	display: grid;
@@ -72,4 +77,15 @@ button {
 	height: var(--dice-pip);
 	border-radius: 100%;
 	background-color: #000;
+}
+
+/* players */
+.players-container {
+	display: grid;
+	grid-template-columns: repeat(2, 12rem);
+}
+
+.player-selected {
+	font-size: 1.4rem;
+	font-weight: 700;
 }

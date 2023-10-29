@@ -4,12 +4,16 @@ export let score
 export let gameState
 </script>
 
+<!--
 <div>
   Roll: {roll || ''}
 </div>
-<div>
-  Score: {score || 0}
+-->
+<div class="total-score">
+  Total: {score || 0}
 </div>
+<!--
 <div>
   Game: {gameState || ''}
 </div>
+-->

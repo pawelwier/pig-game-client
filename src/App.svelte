@@ -5,10 +5,12 @@ import GameData from "./components/GameData.svelte"
 import Dice from "./components/dice/Dice.svelte"
 import { MessageTypes, getRandomResult } from "./utils"
 import MainButton from "./components/MainButton.svelte"
+import ScoreBoard from "./components/ScoreBoard.svelte"
 
 // TODO: refactor App
+// TODO: make reactive
 
-$: canTake = (result > 1) && resultSelected // TODO: edit
+$: canTake = !!score // TODO: edit
 $: canRoll = !result || resultSelected
 
 let result, score, gameState, current
@@ -43,7 +45,7 @@ const onTake = e => {
 		gameId
 	}))
 }
-/*
+
 onMount(async () => {
 	const fetchData = async () => {
 		const data = await fetch(`http://localhost:1212/game/${gameId}`)
@@ -66,27 +68,39 @@ onMount(async () => {
 		const { type } = dataParsed
 
 		if (type === MessageTypes.ADD) { 
-			const { newScore, total } = dataParsed
-			score = total
-		
+			const { currentPlayer } = dataParsed
+			if (currentPlayer) {
+				current = currentPlayer
+				score = 0
+				result = 0
+			} else {
+				score += result
+			}
 		}
 
-		if (type === MessageTypes.TAKE) { 
+		if (type === MessageTypes.TAKE) {
+			playerList = playerList.map(player => 
+				(player._id === current) ? { 
+					...player, score: player.score + score
+				} : player)
 			const { currentPlayer } = dataParsed
 			current = currentPlayer
+			score = 0
+			result = 0
 		}
 	}
 })
-*/
 </script>
 
 <main>
 	<Dice bind:result />
+	<!--
 	<MainButton 
 		disabled
 		on:click={onStart} 
 		text='Start'
-	/>	
+	/>
+	-->
 	<MainButton 
 		disabled={!canRoll}
 		on:click={onRoll} 
@@ -97,24 +111,15 @@ onMount(async () => {
 		on:click={onTake} 
 		text='Take'
 	/>
-	{#if resultSelected}
-		<GameData
-			roll={result}
-			{score}
-			{gameState}
-		/>
-		<div>
-			{current}
-		</div>
-	{/if}
-	{#each playerList as player, i  (i)}
-		<div>
-			{player?.name}
-		</div>
-		<div>
-			{player?.score}
-		</div>
-	{/each}
+	<GameData
+		roll={result}
+		{score}
+		{gameState}
+	/>
+	<ScoreBoard 
+		{playerList}
+		{current}
+	/>
 </main>
 
 <style>
