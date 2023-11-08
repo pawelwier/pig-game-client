@@ -1,3 +1,4 @@
+import { config } from 'dotenv'
 import { spawn } from 'child_process';
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
@@ -6,6 +7,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import css from 'rollup-plugin-css-only';
 import json from "@rollup/plugin-json";
+import replace from 'rollup-plugin-replace';
+
+config()
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -44,6 +48,10 @@ export default {
 				// enable run-time checks when not in production
 				dev: !production
 			}
+		}),
+		replace({
+			'process.env.API_URL': JSON.stringify(process.env.API_URL),
+			'process.env.WS_URL': JSON.stringify(process.env.WS_URL),
 		}),
 		// we'll extract any component CSS out into
 		// a separate file - better for performance

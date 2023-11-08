@@ -9,7 +9,7 @@
   
   onMount(async () => {
     const fetchData = async () => {
-      const data = await fetch('http://localhost:1212/game')
+      const data = await fetch(`${process.env.API_URL}/game`)
       games = await data.json()
     }
     fetchData()

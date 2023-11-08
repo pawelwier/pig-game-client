@@ -11,7 +11,7 @@ const setPlayer = e => { playerStore.set(e.detail) }
 
 onMount(async () => {
   const fetchData = async () => {
-    const data = await fetch(`http://localhost:1212/game/players/${gameId}`)
+    const data = await fetch(`${process.env.API_URL}/game-players?gameId=${gameId}`)
     players = await data.json()
   }
   fetchData()

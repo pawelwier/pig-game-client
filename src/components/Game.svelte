@@ -75,9 +75,9 @@ const onTakeMessage = ({ currentPlayer }) => {
 
 onMount(async () => {
   const fetchData = async () => {
-    const gameRes = await fetch(`http://localhost:1212/game/${gameId}`)
-    const playersRes = await fetch(`http://localhost:1212/game/players/${gameId}`)
-    const playerRes = await fetch(`http://localhost:1212/player/${playerId}`)
+    const gameRes = await fetch(`${process.env.API_URL}/game?gameId=${gameId}`)
+    const playersRes = await fetch(`${process.env.API_URL}/game-players?gameId=${gameId}`)
+    const playerRes = await fetch(`${process.env.API_URL}/player?playerId=${playerId}`)
 
     const { currentPlayer, currentScore, state } = await gameRes.json()
 

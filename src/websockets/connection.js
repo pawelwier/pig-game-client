@@ -3,7 +3,7 @@ import { MessageTypes } from "../utils"
 export const getSocketConnection = ({
   onAddMessage, onTakeMessage
 }) => {
-  const socket = new WebSocket('ws://localhost:2323/', 'pig-game-protocol')
+  const socket = new WebSocket(process.env.WS_URL, 'pig-game-protocol')
   socket.onmessage = e => {
     const dataParsed = JSON.parse(e.data)
     const { type, currentPlayer, points } = dataParsed
