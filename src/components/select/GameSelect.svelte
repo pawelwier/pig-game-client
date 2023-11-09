@@ -17,9 +17,9 @@
   </script>
   
   <MainSelect 
-    label='Select game ID:'
+    label='Select game:'
     options={games}
     paramValue='_id'
-    paramLabel='_id'
+    paramLabel='name'
     on:change={setGame}
   />

@@ -2,23 +2,27 @@
 import { onMount } from "svelte"
 import GameData from "./GameData.svelte"
 import Dice from "./dice/Dice.svelte"
-import { MessageTypes, getRandomResult } from "../utils"
+import { GameState, MessageTypes, getRandomResult } from "../utils"
 import { getSocketConnection } from "../websockets/connection"
 import MainButton from "./MainButton.svelte"
 import ScoreBoard from "./ScoreBoard.svelte"
+    import Pip from "./dice/Pip.svelte";
 
 export let gameId
 export let playerId
 
-let socket, result, score, gameState, current
+let socket, result, score, gameState, current, winner
 let playerList = []
 let player = {}
 let resultSelected = false
 
 $: ({ _id, name } = player)
 $: isPlayerTurn = current === _id
-$: canTake = !!score && isPlayerTurn
+$: isGameFinished = gameState === GameState.FINISHED
+$: canTake = !!score && isPlayerTurn && resultSelected
 $: canRoll = (!result || resultSelected) && isPlayerTurn
+$: canRestart = isGameFinished
+$: currentPlayerName = playerList.find(({ _id }) => _id === current)?.name || ''
 
 const onStart = e => { console.log('start') } // TODO
 
@@ -27,6 +31,14 @@ const sendResult = (points) => {
     type: MessageTypes.ADD,
     points,
     gameId
+  }))
+}
+
+const onRestart = () => {
+  socket.send(JSON.stringify({
+    type: MessageTypes.RESTART,
+    gameId,
+    currentPlayer: current
   }))
 }
 
@@ -63,7 +75,7 @@ const onAddMessage = ({ currentPlayer, points }) => {
   }
 }
 
-const onTakeMessage = ({ currentPlayer }) => {
+const onTakeMessage = ({ currentPlayer, isWinner }) => {
   playerList = playerList.map(player => 
     (player._id === current) ? { 
       ...player, score: player.score + score
@@ -71,6 +83,25 @@ const onTakeMessage = ({ currentPlayer }) => {
   current = currentPlayer
   score = 0
   result = 0
+  console.log({isWinner})
+  if (isWinner) {
+    winner = currentPlayer
+    gameState = GameState.FINISHED
+  }
+}
+
+const onRestartMessage = ({ currentPlayer }) => {
+  current = currentPlayer
+  score = 0
+  result = 0
+  winner = null
+  gameState = GameState.NEW
+  playerList = playerList.map(player => (
+    {
+      ...player,
+      score: 0
+    }
+  ))
 }
 
 onMount(async () => {
@@ -94,29 +125,29 @@ onMount(async () => {
 
   fetchData()
 
-  socket = getSocketConnection({ onAddMessage, onTakeMessage })
+  socket = getSocketConnection({ onAddMessage, onTakeMessage, onRestartMessage })
 })
 </script>
 
 <div class="game-main">
-  <div>
-    {isPlayerTurn ? `Your turn, ${name}` : 'Please wait for your turn!'}
-  </div>
+  {#if !isGameFinished}
+    <div>
+      {isPlayerTurn ? `Your turn, ${name}` : `Please wait for your turn, ${name}!`}
+    </div>
+  {/if}
   <Dice bind:result />
-  <!--
   <MainButton 
-    disabled
-    on:click={onStart} 
-    text='Start'
+    disabled={!canRestart}
+    on:click={onRestart} 
+    text='Restart'
   />
-  -->
   <MainButton 
-    disabled={!canRoll}
+    disabled={!canRoll || isGameFinished}
     on:click={onRoll} 
     text='Roll'
   />
   <MainButton
-    disabled={!canTake}
+    disabled={!canTake || isGameFinished}
     on:click={onTake} 
     text='Take'
   />
@@ -129,4 +160,14 @@ onMount(async () => {
     {playerList}
     {current}
   />
+  {#if winner}
+    <div class="winner-container">
+      <div class="winner-text">
+        And the winner is ...
+      </div>
+      <div class="winner-name">
+        {currentPlayerName} !!!!
+      </div>
+    </div>
+  {/if}
 </div>

@@ -13,5 +13,12 @@ export const getRandomResult = () => Math.floor(Math.random() * 6) + 1
 export const MessageTypes = {
   // START: 'start',
   ADD: 'add',
-  TAKE: 'take'
+  TAKE: 'take',
+  RESTART: 'restart'
+}
+
+export const GameState = {
+  NEW: 'new',
+  ACTIVE: 'active',
+  FINISHED: 'finished'
 }
