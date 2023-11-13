@@ -11,7 +11,6 @@ export const diceOptions = {
 export const getRandomResult = () => Math.floor(Math.random() * 6) + 1
 
 export const MessageTypes = {
-  // START: 'start',
   ADD: 'add',
   TAKE: 'take',
   RESTART: 'restart'

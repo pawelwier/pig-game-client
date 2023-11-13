@@ -7,10 +7,40 @@ export const getSocketConnection = ({
   socket.onmessage = e => {
     const dataParsed = JSON.parse(e.data)
     const { type, currentPlayer, points, isWinner } = dataParsed
-    if (type === MessageTypes.ADD) { onAddMessage({ currentPlayer, points }) }
-    if (type === MessageTypes.TAKE) { onTakeMessage({ currentPlayer, isWinner }) }
-    if (type === MessageTypes.RESTART) { onRestartMessage({ currentPlayer }) }
+    switch (type) {
+      case MessageTypes.ADD :
+        onAddMessage({ currentPlayer, points })
+        break
+      case MessageTypes.TAKE :
+        onTakeMessage({ currentPlayer, isWinner })
+        break
+      case MessageTypes.RESTART :
+        onRestartMessage({ currentPlayer })
+        break
+    }
   }
   return socket
 }
 
+export const sendAddMessage = ({ socket, gameId, points }) => {
+  socket.send(JSON.stringify({
+    type: MessageTypes.ADD,
+    gameId,
+    points
+  }))
+}
+
+export const sendTakeMessage = ({ socket, gameId }) => {
+  socket.send(JSON.stringify({
+    type: MessageTypes.TAKE,
+    gameId
+  }))
+}
+
+export const sendRestartMessage = ({ socket, gameId, current }) => {
+  socket.send(JSON.stringify({
+    type: MessageTypes.RESTART,
+    gameId,
+    currentPlayer: current
+  }))
+}
